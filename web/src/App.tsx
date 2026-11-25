@@ -1,122 +1,81 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { getForm, listForms, type FormSummary } from './api/client'
+import { FormRenderer } from './components/FormRenderer'
+import type { FormSchema } from './engine/types'
 
-function App() {
-  const [count, setCount] = useState(0)
+function useHashId(): string {
+  const read = () => window.location.hash.replace(/^#\/?/, '')
+  const [id, setId] = useState(read)
+  useEffect(() => {
+    const onChange = () => setId(read())
+    window.addEventListener('hashchange', onChange)
+    return () => window.removeEventListener('hashchange', onChange)
+  }, [])
+  return id
+}
+
+export default function App() {
+  const hashId = useHashId()
+  const [forms, setForms] = useState<FormSummary[] | null>(null)
+  const [schema, setSchema] = useState<FormSchema | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const ctrl = new AbortController()
+    listForms(ctrl.signal)
+      .then(setForms)
+      .catch((e: unknown) => {
+        if (!ctrl.signal.aborted) setError(e instanceof Error ? e.message : 'Could not load forms')
+      })
+    return () => ctrl.abort()
+  }, [])
+
+  const selected = hashId || forms?.[0]?.id || ''
+
+  useEffect(() => {
+    if (!selected) return
+    const ctrl = new AbortController()
+    setSchema(null)
+    setError(null)
+    getForm(selected, ctrl.signal)
+      .then((s) => {
+        setSchema(s)
+        document.title = `${s.title} – Dynamic Form Renderer`
+      })
+      .catch((e: unknown) => {
+        if (!ctrl.signal.aborted) setError(e instanceof Error ? e.message : 'Could not load form')
+      })
+    return () => ctrl.abort()
+  }, [selected])
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+      <a className="skip" href="#main">
+        Skip to form
+      </a>
+      <header>
+        <h1>Dynamic Form Renderer</h1>
+        <nav aria-label="Forms">
+          <ul>
+            {(forms ?? []).map((f) => (
+              <li key={f.id}>
+                <a href={`#/${f.id}`} aria-current={f.id === selected ? 'page' : undefined}>
+                  {f.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
+      <main id="main" tabIndex={-1}>
+        {error && (
+          <p className="error" role="alert">
+            {error}. Is the mock API running?
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        )}
+        {!error && !schema && <p role="status">Loading form…</p>}
+        {schema && <FormRenderer key={schema.id} schema={schema} />}
+      </main>
     </>
   )
 }
-
-export default App

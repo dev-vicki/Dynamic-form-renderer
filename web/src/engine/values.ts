@@ -44,12 +44,12 @@ export function setAt<T>(root: T, path: string, value: unknown): T {
   return rec(root, 0) as T
 }
 
-function initialFor(fields: FieldSchema[]): FormValues {
+export function initialRow(fields: FieldSchema[]): FormValues {
   const out: FormValues = {}
   for (const f of fields) {
-    if (f.type === 'section') Object.assign(out, initialFor(f.fields ?? []))
+    if (f.type === 'section') Object.assign(out, initialRow(f.fields ?? []))
     else if (f.type === 'group') {
-      out[f.name] = Array.from({ length: f.repeat?.min ?? 0 }, () => initialFor(f.fields ?? []))
+      out[f.name] = Array.from({ length: f.repeat?.min ?? 0 }, () => initialRow(f.fields ?? []))
     } else if (f.type === 'checkbox') out[f.name] = false
     else if (f.type === 'multiselect') out[f.name] = []
   }
@@ -57,7 +57,7 @@ function initialFor(fields: FieldSchema[]): FormValues {
 }
 
 export function initialValues(schema: FormSchema): FormValues {
-  return initialFor(schema.fields)
+  return initialRow(schema.fields)
 }
 
 function sanitizeScalar(f: FieldSchema, v: unknown): unknown {
@@ -113,7 +113,7 @@ export function restoreDraft(schema: FormSchema, draft: unknown): FormValues {
       else if (f.type === 'group') {
         const rows = (scope[f.name] as FormValues[]) ?? []
         const min = f.repeat?.min ?? 0
-        while (rows.length < min) rows.push(initialFor(f.fields ?? []))
+        while (rows.length < min) rows.push(initialRow(f.fields ?? []))
         scope[f.name] = rows
         rows.forEach((r) => fix(f.fields ?? [], r))
       }
