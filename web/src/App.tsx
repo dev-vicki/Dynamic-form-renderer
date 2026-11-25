@@ -53,8 +53,13 @@ export default function App() {
       <a className="skip" href="#main">
         Skip to form
       </a>
-      <header>
-        <h1>Dynamic Form Renderer</h1>
+      <header className="site-header">
+        <div className="header-inner">
+          <div>
+            <h1>Dynamic Form Renderer</h1>
+            <p className="tagline">Forms driven by JSON configuration</p>
+          </div>
+        </div>
         <nav aria-label="Forms">
           <ul>
             {(forms ?? []).map((f) => (
