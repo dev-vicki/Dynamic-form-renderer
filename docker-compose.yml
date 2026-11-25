@@ -1,0 +1,24 @@
+services:
+  mock-api:
+    build: ./mock-api
+    ports:
+      - "4000:4000"
+    volumes:
+      # schemas are mounted read-only, never copied into the image or edited
+      - ./data:/data:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: ./web
+      args:
+        VITE_API_URL: http://localhost:4000
+    ports:
+      - "3000:80"
+    depends_on:
+      mock-api:
+        condition: service_healthy
