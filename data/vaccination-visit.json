@@ -1,0 +1,116 @@
+{
+  "id": "vaccination-visit",
+  "title": "Vaccination Visit",
+  "description": "Record a vaccination visit and any adverse reactions.",
+  "version": 1,
+  "fields": [
+    { "name": "patientName", "label": "Patient name", "type": "text", "required": true },
+    {
+      "name": "dateOfBirth",
+      "label": "Date of birth",
+      "type": "date",
+      "required": true,
+      "validation": { "before": "visitDate", "message": "Date of birth must be before the visit date." }
+    },
+    { "name": "visitDate", "label": "Visit date", "type": "date", "required": true },
+    {
+      "name": "vaccine",
+      "label": "Vaccine",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "covid19", "label": "COVID-19" },
+        { "value": "mmr", "label": "MMR" },
+        { "value": "polio", "label": "Polio" },
+        { "value": "tetanus", "label": "Tetanus" }
+      ]
+    },
+    {
+      "name": "batchNumber",
+      "label": "Batch number",
+      "type": "text",
+      "helpText": "Format B-1234.",
+      "validation": { "pattern": "^B-[0-9]{4}$", "patternMessage": "Batch number must look like B-1234." }
+    },
+    {
+      "name": "doseType",
+      "label": "Dose",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "first", "label": "First dose" },
+        { "value": "followup", "label": "Follow-up dose" }
+      ]
+    },
+    {
+      "name": "previousDoseDate",
+      "label": "Previous dose date",
+      "type": "date",
+      "visibleWhen": { "field": "doseType", "op": "eq", "value": "followup" },
+      "requiredWhen": { "field": "doseType", "op": "eq", "value": "followup" },
+      "validation": { "before": "visitDate", "message": "Previous dose must be before this visit." }
+    },
+    {
+      "name": "nextDoseDate",
+      "label": "Next dose due",
+      "type": "date",
+      "visibleWhen": { "field": "doseType", "op": "eq", "value": "first" },
+      "validation": { "after": "visitDate", "message": "Next dose must be after the visit date." }
+    },
+    { "name": "hadReaction", "label": "Patient had an adverse reaction", "type": "checkbox" },
+    {
+      "name": "reactionSection",
+      "label": "Adverse reactions",
+      "type": "section",
+      "visibleWhen": { "field": "hadReaction", "op": "eq", "value": true },
+      "fields": [
+        {
+          "name": "reactions",
+          "label": "Reactions",
+          "type": "group",
+          "itemLabel": "Reaction",
+          "repeat": { "min": 1, "max": 5 },
+          "fields": [
+            {
+              "name": "symptom",
+              "label": "Symptom",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "value": "fever", "label": "Fever" },
+                { "value": "rash", "label": "Rash" },
+                { "value": "swelling", "label": "Swelling" },
+                { "value": "other", "label": "Other" }
+              ]
+            },
+            {
+              "name": "symptomOther",
+              "label": "Describe the symptom",
+              "type": "text",
+              "visibleWhen": { "field": "symptom", "op": "eq", "value": "other" },
+              "requiredWhen": { "field": "symptom", "op": "eq", "value": "other" }
+            },
+            {
+              "name": "severity",
+              "label": "Severity",
+              "type": "select",
+              "required": true,
+              "options": [
+                { "value": "mild", "label": "Mild" },
+                { "value": "moderate", "label": "Moderate" },
+                { "value": "severe", "label": "Severe" }
+              ]
+            },
+            {
+              "name": "onsetDate",
+              "label": "Onset date",
+              "type": "date",
+              "required": true,
+              "validation": { "onOrAfter": "visitDate", "message": "Onset cannot be before the visit date." }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

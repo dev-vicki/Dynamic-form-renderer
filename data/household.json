@@ -1,0 +1,110 @@
+{
+  "id": "household",
+  "title": "Household Registration",
+  "description": "Register a household and its members.",
+  "version": 1,
+  "fields": [
+    {
+      "name": "headName",
+      "label": "Name of head of household",
+      "type": "text",
+      "required": true,
+      "validation": { "minLength": 2, "maxLength": 80 }
+    },
+    {
+      "name": "mobile",
+      "label": "Mobile number",
+      "type": "text",
+      "required": true,
+      "helpText": "10 digits, starting with 6-9.",
+      "validation": { "pattern": "^[6-9][0-9]{9}$", "patternMessage": "Enter a valid 10-digit mobile number." }
+    },
+    {
+      "name": "address",
+      "label": "Address",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "dwellingType",
+      "label": "Dwelling type",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "owned", "label": "Owned" },
+        { "value": "rented", "label": "Rented" },
+        { "value": "other", "label": "Other" }
+      ]
+    },
+    {
+      "name": "monthlyRent",
+      "label": "Monthly rent (INR)",
+      "type": "number",
+      "visibleWhen": { "field": "dwellingType", "op": "eq", "value": "rented" },
+      "requiredWhen": { "field": "dwellingType", "op": "eq", "value": "rented" },
+      "validation": { "min": 0, "max": 1000000 }
+    },
+    {
+      "name": "dwellingOther",
+      "label": "Describe the dwelling",
+      "type": "text",
+      "visibleWhen": { "field": "dwellingType", "op": "eq", "value": "other" },
+      "requiredWhen": { "field": "dwellingType", "op": "eq", "value": "other" }
+    },
+    {
+      "name": "utilities",
+      "label": "Utilities available",
+      "type": "multiselect",
+      "options": [
+        { "value": "electricity", "label": "Electricity" },
+        { "value": "water", "label": "Piped water" },
+        { "value": "gas", "label": "Cooking gas" },
+        { "value": "internet", "label": "Internet" }
+      ]
+    },
+    {
+      "name": "members",
+      "label": "Household members",
+      "type": "group",
+      "itemLabel": "Member",
+      "repeat": { "min": 1, "max": 10 },
+      "fields": [
+        { "name": "name", "label": "Full name", "type": "text", "required": true },
+        {
+          "name": "age",
+          "label": "Age",
+          "type": "number",
+          "required": true,
+          "validation": { "min": 0, "max": 120 }
+        },
+        {
+          "name": "relationship",
+          "label": "Relationship to head",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "self", "label": "Self" },
+            { "value": "spouse", "label": "Spouse" },
+            { "value": "child", "label": "Child" },
+            { "value": "parent", "label": "Parent" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        { "name": "isEarning", "label": "Earns an income", "type": "checkbox" },
+        {
+          "name": "occupation",
+          "label": "Occupation",
+          "type": "text",
+          "visibleWhen": { "field": "isEarning", "op": "eq", "value": true },
+          "requiredWhen": { "field": "isEarning", "op": "eq", "value": true }
+        }
+      ]
+    },
+    {
+      "name": "consent",
+      "label": "I confirm the information above is correct",
+      "type": "checkbox",
+      "required": true
+    }
+  ]
+}

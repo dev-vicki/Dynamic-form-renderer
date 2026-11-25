@@ -1,0 +1,92 @@
+{
+  "id": "complaint",
+  "title": "Citizen Complaint",
+  "description": "Lodge a complaint with a municipal service. Contains an intentional circular visibility dependency (escalate <-> escalationReason).",
+  "version": 1,
+  "fields": [
+    { "name": "anonymous", "label": "Submit anonymously", "type": "checkbox" },
+    {
+      "name": "complainantName",
+      "label": "Your name",
+      "type": "text",
+      "visibleWhen": { "field": "anonymous", "op": "neq", "value": true },
+      "requiredWhen": { "field": "anonymous", "op": "neq", "value": true }
+    },
+    {
+      "name": "contactEmail",
+      "label": "Contact email",
+      "type": "text",
+      "visibleWhen": { "field": "anonymous", "op": "neq", "value": true },
+      "requiredWhen": { "field": "anonymous", "op": "neq", "value": true },
+      "validation": { "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "patternMessage": "Enter a valid email address." }
+    },
+    {
+      "name": "category",
+      "label": "Category",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "water", "label": "Water supply" },
+        { "value": "roads", "label": "Roads" },
+        { "value": "sanitation", "label": "Sanitation" },
+        { "value": "other", "label": "Other" }
+      ]
+    },
+    {
+      "name": "categoryOther",
+      "label": "Describe the category",
+      "type": "text",
+      "visibleWhen": { "field": "category", "op": "eq", "value": "other" },
+      "requiredWhen": { "field": "category", "op": "eq", "value": "other" }
+    },
+    {
+      "name": "severity",
+      "label": "Severity",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "low", "label": "Low" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "high", "label": "High" }
+      ]
+    },
+    {
+      "name": "urgentReason",
+      "label": "Why is this urgent?",
+      "type": "text",
+      "visibleWhen": { "field": "severity", "op": "eq", "value": "high" },
+      "requiredWhen": { "field": "severity", "op": "eq", "value": "high" }
+    },
+    {
+      "name": "incidentDate",
+      "label": "Incident start date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "name": "resolvedDate",
+      "label": "Incident end date",
+      "type": "date",
+      "validation": { "after": "incidentDate", "message": "End date must be after the start date." }
+    },
+    {
+      "name": "description",
+      "label": "Description",
+      "type": "text",
+      "required": true,
+      "validation": { "minLength": 10, "maxLength": 500 }
+    },
+    {
+      "name": "escalate",
+      "label": "Escalate to a supervisor",
+      "type": "checkbox",
+      "visibleWhen": { "field": "escalationReason", "op": "filled" }
+    },
+    {
+      "name": "escalationReason",
+      "label": "Reason for escalation",
+      "type": "text",
+      "visibleWhen": { "field": "escalate", "op": "eq", "value": true }
+    }
+  ]
+}
