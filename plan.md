@@ -14,13 +14,11 @@
 
 ## Status and what was cut
 
-Done: milestones 1-6, with 16 engine unit tests, and a manual browser pass (validation, summary focus, 422 on array rows, draft restore, cycle warning, Docker stack).
+Done: milestones 1-7, with 16 engine unit tests and 7 component tests (jest-axe on all three schemas, conditional show/hide, error announcement and focus, draft restore, 422 mapping), and a manual browser pass (validation, summary focus, 422 on array rows, draft restore, cycle warning). The Docker stack was built from a clean copy of the tracked files (no `node_modules`): both containers reached healthy, schemas loaded, the 422 response worked and the web app rendered a form from the API.
 
 Cut or incomplete, and why:
-- **Component tests and jest-axe checks**: not written at the time these docs were drafted; the engine holds the logic, so it was tested first. Update this line when they land.
 - **Manual keyboard and screen-reader pass** (VoiceOver/NVDA): structure follows standards (labels, fieldset/legend, aria-describedby, live regions, focus management) but has not been verified with a real screen reader.
-- **Clean-clone `docker compose up` check**: verified from the working copy only.
-- **Styling/responsive polish**: deliberately minimal ("function over polish").
+- **Styling polish**: a clean, accessible, mobile-friendly layout was added, but no design system or dark mode.
 
 ## How I interpret the schema
 
@@ -50,13 +48,13 @@ household: mobile ending `0000000`, duplicate member names; vaccination-visit: b
 ## Test strategy
 
 - **Unit (engine, Vitest)**: conditions, path helpers, hidden-value policy, per-row requiredness, repeat min, cross-field dates, nested group in conditional section, cycle detection, 422 mapping, draft sanitising. Uses the real `data/*.json` so schema edits that break behaviour fail tests.
-- **Component (Testing Library)** *(next)*: conditional show/hide by user action, error announced and focus moved on submit, draft saved then restored after remount, 422 lands on the right field, add/remove row focus.
+- **Component (Testing Library + jest-axe, `FormRenderer.test.tsx`)**: conditional show/hide by user action, error announced and focus moved on submit, draft saved then restored after remount, 422 lands on the right field, add/remove row focus.
 - **Accessibility**: jest-axe per schema *(next)*, plus a manual keyboard-only and screen-reader checklist.
 - **Manual/E2E**: `docker compose up`, exercise all three forms in a browser.
 
 ## With one more day
 
-1. Finish component tests, jest-axe on every state (errors showing, rows added), and a real VoiceOver + NVDA pass; fix what they find.
+1. Extend jest-axe to more states (errors showing, rows added), add add/remove-row focus tests, and do a real VoiceOver + NVDA pass; fix what they find.
 2. Playwright E2E against the compose stack.
 3. A JSON Schema for the config with load-time validation and friendly errors; schema version migration for drafts.
 4. Dependent options, computed fields, and `requiredWhen` on groups.
