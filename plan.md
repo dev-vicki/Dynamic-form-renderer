@@ -8,7 +8,7 @@
 | 2 | Schemas + mock API | Three schemas in `data/`, zero-dependency Node API with 422 rules |
 | 3 | Engine | Conditions, visibility with cycle detection, validation, submit/422 mapping, draft sanitising (pure TS, unit-tested) |
 | 4 | UI | Field components, repeating groups, error summary, autosave + indicator, submit flow |
-| 5 | Docker | `docker compose up` starts API (:4000) and web (:3000) |
+| 5 | Docker | `docker compose up --build` starts API (:4000) and web (:3000) |
 | 6 | Docs | spec, plan, README, ai-log |
 | 7 | Component tests + a11y | Testing Library flows and a jest-axe check per schema (see status) |
 

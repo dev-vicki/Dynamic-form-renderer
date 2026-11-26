@@ -5,12 +5,14 @@ A config-driven React (TypeScript) form renderer. Forms come from JSON schemas, 
 ## Run it
 
 ```bash
-docker compose up
+docker compose up --build
 ```
 
 Then open **http://localhost:3000**. The mock API is at http://localhost:4000. Stop with `Ctrl+C`, then `docker compose down`.
 
-Requires Docker with ports 3000 and 4000 free. The first build downloads images and npm packages (a corporate TLS-inspecting proxy can break this; see Troubleshooting).
+`--build` makes sure the images are rebuilt from the current code (a plain `docker compose up` reuses an older image if one exists).
+
+Requires Docker Desktop running (start the app first), with ports 3000 and 4000 free. The first build downloads images and npm packages.
 
 Forms: **Household Registration**, **Vaccination Visit**, **Citizen Complaint** (the nav links at the top; each is rendered from `data/*.json` with no form-specific code).
 

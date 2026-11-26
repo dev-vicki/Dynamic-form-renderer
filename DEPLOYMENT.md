@@ -48,7 +48,7 @@ git archive --format=zip --output=../dynamic-form-renderer.zip HEAD
 ```
 
 `git archive` only includes tracked files, so `node_modules` and build output are left out automatically.
-3. In the email: link/zip, the one command (`docker compose up`), the URL (http://localhost:3000), the test command (`cd web && npm install && npm test`), and a pointer to `spec.md`, `plan.md`, `ai-log.md`.
+3. In the email: link/zip, the one command (`docker compose up --build`), the URL (http://localhost:3000), the test command (`cd web && npm install && npm test`), and a pointer to `spec.md`, `plan.md`, `ai-log.md`.
 
 ## Optional: a public demo
 

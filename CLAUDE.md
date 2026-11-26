@@ -20,7 +20,7 @@ npm run dev                                # Vite on :5173, expects API on :4000
 
 Mock API (no dependencies, no install): `node mock-api/server.js` from the repo root (port 4000, reads `data/`, override with `PORT` / `DATA_DIR`).
 
-Full stack: `docker compose up` → web on http://localhost:3000 (nginx), API on http://localhost:4000.
+Full stack: `docker compose up --build` → web on http://localhost:3000 (nginx), API on http://localhost:4000.
 
 ## Architecture
 
